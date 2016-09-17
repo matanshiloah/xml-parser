@@ -1,11 +1,23 @@
 {
-  "name": "xml-parser",
-  "version": "1.0.0",
+  "name": "react-xml-parser",
+  "version": "1.0.1",
   "description": "XML parser for react-native",
   "main": "xmlParser.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Matan Shiloah",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matanshiloah/xml-parser.git"
+  },
+  "keywords": [
+    "XML",
+    "react"
+  ],
+  "bugs": {
+    "url": "https://github.com/matanshiloah/xml-parser/issues"
+  },
+  "homepage": "https://github.com/matanshiloah/xml-parser#readme"
 }
