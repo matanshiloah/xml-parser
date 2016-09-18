@@ -1,6 +1,6 @@
 {
   "name": "react-xml-parser",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "XML parser for react-native",
   "main": "xmlParser.js",
   "scripts": {

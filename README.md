@@ -16,7 +16,7 @@ XML:
 ```
 <?xml version='1.0' encoding='utf-8'?>
 <Library>
-   <Books count=1>
+   <Books count='1'>
        <Book id='1'>
            <Name>Me Before You</Name>
            <Author>Jojo Moyes</Author>

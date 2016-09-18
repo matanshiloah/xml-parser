@@ -43,7 +43,7 @@ function XMLParser() {
         for (var i = 1; i < tagText.length; i++) {
             var attribute = tagText[i].split('=');
             
-            tag.attributes[attribute[0]] = attribute[1].replace(/"/g, '').trim();
+            tag.attributes[attribute[0]] = attribute[1].replace(/"/g, '').replace(/'/g, '').trim();
         }
         
         return tag;
@@ -66,6 +66,14 @@ function XMLParser() {
         
         var tag = xml.shift();
         
+        if (tag.value.indexOf('</') > -1) {
+            tag.value = tag.value.substring(0, tag.value.indexOf('</'));
+            xmlTree.push(tag);
+            xmlTree = xmlTree.concat(convertTagsArrayToTree(xml));
+            
+            return xmlTree;
+        }
+        
         if (tag.name.indexOf('/') == 0) {
             return xmlTree;
         }
@@ -77,9 +85,43 @@ function XMLParser() {
         return xmlTree;
     }
     
+    function toString(xml) {
+        var xmlText = convertTagToText(xml);
+        
+        if (xml.children.length > 0) {
+            for (var i = 0; i < xml.children.length; i++) {
+                xmlText += toString(xml.children[i]);
+            }
+            
+            xmlText += '</' + xml.name + '>';
+        }
+        
+        return xmlText;
+    }
+    
+    function convertTagToText(tag) {
+        var tagText = '<' + tag.name;
+        var attributesText = [];
+        
+        for (var attribute in tag.attributes) {
+            tagText += ' ' + attribute + '="' + tag.attributes[attribute] + '"';
+        }
+        
+        if (tag.value.length > 0) {
+            tagText += '>' + tag.value + '</' + tag.name + '>';
+        } else {
+            tagText += '>';
+        }
+        
+        return tagText;
+    }
+    
     return {
         parseFromString: function (xmlText) {
             return parseFromString(xmlText);
+        },
+        toString: function (xml) {
+            return toString(xml);
         }
     };
 }
