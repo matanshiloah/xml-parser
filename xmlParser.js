@@ -18,7 +18,7 @@ function XMLParser() {
     }
     
     function parseTag(tagText, parent) {
-        tagText = tagText.replace('<', '').replace('>', '').split(' ');
+        tagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\w\-]+)/g);
         
         var tag = {
             name: tagText[0],
