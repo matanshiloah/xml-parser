@@ -43,7 +43,9 @@ function XMLParser() {
         for (var i = 1; i < tagText.length; i++) {
             var attribute = tagText[i].split('=');
             
-            tag.attributes[attribute[0]] = attribute[1].replace(/"/g, '').replace(/'/g, '').trim();
+            tag.attributes[attribute[0]] = typeof attribute[1] === 'string' ?
+                attribute[1].replace(/"/g, '').replace(/'/g, '').trim() :
+                '';
         }
         
         return tag;
