@@ -1,11 +1,17 @@
 function XMLParser() {
     function parseFromString(xmlText) {
-        xmlText = xmlText.replace(/\s{2,}/g, '').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n');
+        xmlText = xmlText.replace(/\s{2,}/g, ' ').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n');
         var tags = xmlText.split('\n');
         var xml = [];
-        
+
         for (var i = 0; i < tags.length; i++) {
             if (tags[i].indexOf('?xml') < 0) {
+                tags[i] = tags[i].trim();
+
+                if (!tags[i]) {
+                    continue;
+                }
+
                 if (tags[i].indexOf('<') == 0 && tags[i].indexOf('CDATA') < 0) {
                     xml.push(parseTag(tags[i]));
                 } else {
@@ -13,7 +19,7 @@ function XMLParser() {
                 }
             }
         }
-                
+
         return convertTagsArrayToTree(xml)[0];
     }
     
@@ -42,10 +48,12 @@ function XMLParser() {
         
         for (var i = 1; i < tagText.length; i++) {
             var attribute = tagText[i].split('=');
+
+            if (attribute.length < 2) {
+                continue;
+            }
             
-            tag.attributes[attribute[0]] = typeof attribute[1] === 'string' ?
-                attribute[1].replace(/"/g, '').replace(/'/g, '').trim() :
-                '';
+            tag.attributes[attribute[0]] = typeof attribute[1] === 'string' ? (attribute[1].replace(/"/g, '').replace(/'/g, '').trim()) : attribute[1];
         }
         
         return tag;
@@ -67,8 +75,9 @@ function XMLParser() {
         }
         
         var tag = xml.shift();
-        
-        if (tag.value.indexOf('</') > -1) {
+
+        if (tag.value.indexOf('</') > -1 || tag.name.match(/\/$/)) {
+            tag.name = tag.name.replace(/\/$/, '').trim();
             tag.value = tag.value.substring(0, tag.value.indexOf('</'));
             xmlTree.push(tag);
             xmlTree = xmlTree.concat(convertTagsArrayToTree(xml));
