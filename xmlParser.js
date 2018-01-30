@@ -1,65 +1,67 @@
-function XMLParser() {
-    function parseFromString(xmlText) {
-        xmlText = xmlText.replace(/\s{2,}/g, ' ').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n');
-        var tags = xmlText.split('\n');
-        var xml = [];
+module.exports = class {
+    constructor() {}
 
-        for (var i = 0; i < tags.length; i++) {
-            if (tags[i].indexOf('?xml') < 0) {
-                tags[i] = tags[i].trim();
+    _parseFromString(xmlText) {
+        var cleanXmlText = xmlText.replace(/\s{2,}/g, ' ').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n');
+        var rawXmlData = [];
+        
+        cleanXmlText.split('\n').map(element => {
+            element = element.trim();
 
-                if (!tags[i]) {
-                    continue;
-                }
-
-                if (tags[i].indexOf('<') == 0 && tags[i].indexOf('CDATA') < 0) {
-                    xml.push(parseTag(tags[i]));
-                } else {
-                    xml[xml.length - 1].value = parseValue(tags[i]);
-                }
+            if (!element || element.indexOf('?xml') > -1) {
+                return;
             }
+            
+            if (element.indexOf('<') == 0 && element.indexOf('CDATA') < 0) {
+                rawXmlData.push(this._parseTag(element));
+            } else {
+                rawXmlData[rawXmlData.length - 1].value = this._parseValue(element);
+            }
+
+        });
+
+        return this._convertTagsArrayToTree(rawXmlData)[0];
+    }
+
+    _getElementsByTagName(tagName) {
+        var matches = [];
+        
+        if (tagName == '*' || this.name.toLowerCase() === tagName.toLowerCase()) {
+            matches.push(this);
         }
 
-        return convertTagsArrayToTree(xml)[0];
+        this.children.map(child => {
+            matches = matches.concat(child.getElementsByTagName(tagName));
+        });
+        
+        return matches;
     }
     
-    function parseTag(tagText, parent) {
-        tagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-]+)/g);
+    _parseTag(tagText, parent) {
+        var cleanTagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-]+)/g);
         
         var tag = {
-            name: tagText[0],
+            name: cleanTagText.shift(),
             attributes: {},
             children: [],
             value: '',
-            getElementsByTagName: function (tagName) {
-                var matches = [];
-                
-                if (tagName == '*' || this.name.toLowerCase() == tagName.toLowerCase()) {
-                    matches.push(this);
-                }
-                
-                for (var i = 0; i < this.children.length; i++) {
-                    matches = matches.concat(this.children[i].getElementsByTagName(tagName));
-                }
-                
-                return matches;
-            }
+            getElementsByTagName: this._getElementsByTagName
         };
-        
-        for (var i = 1; i < tagText.length; i++) {
-            var attribute = tagText[i].split('=');
 
-            if (attribute.length < 2) {
-                continue;
+        cleanTagText.map(attribute => {
+            var attributeKeyVal = attribute.split('=');
+
+            if (attributeKeyVal.length < 2) {
+                return;
             }
-            
-            tag.attributes[attribute[0]] = typeof attribute[1] === 'string' ? (attribute[1].replace(/"/g, '').replace(/'/g, '').trim()) : attribute[1];
-        }
+
+            tag.attributes[attributeKeyVal[0]] = typeof attributeKeyVal[1] === 'string' ? (attributeKeyVal[1].replace(/"/g, '').replace(/'/g, '').trim()) : attributeKeyVal[1];
+        });
         
         return tag;
     }
     
-    function parseValue(tagValue) {
+    _parseValue(tagValue) {
         if (tagValue.indexOf('CDATA') < 0) {
             return tagValue.trim();
         }
@@ -67,7 +69,7 @@ function XMLParser() {
         return tagValue.substring(tagValue.lastIndexOf('[') + 1, tagValue.indexOf(']'));
     }
     
-    function convertTagsArrayToTree(xml) {
+    _convertTagsArrayToTree(xml) {
         var xmlTree = [];
         
         if (xml.length == 0) {
@@ -80,7 +82,7 @@ function XMLParser() {
             tag.name = tag.name.replace(/\/$/, '').trim();
             tag.value = tag.value.substring(0, tag.value.indexOf('</'));
             xmlTree.push(tag);
-            xmlTree = xmlTree.concat(convertTagsArrayToTree(xml));
+            xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
             
             return xmlTree;
         }
@@ -90,27 +92,28 @@ function XMLParser() {
         }
         
         xmlTree.push(tag);
-        tag.children = convertTagsArrayToTree(xml);
-        xmlTree = xmlTree.concat(convertTagsArrayToTree(xml));
+        tag.children = this._convertTagsArrayToTree(xml);
+        xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
         
         return xmlTree;
     }
     
-    function toString(xml) {
-        var xmlText = convertTagToText(xml);
+    _toString(xml) {
+        var xmlText = this._convertTagToText(xml);
+
         
         if (xml.children.length > 0) {
-            for (var i = 0; i < xml.children.length; i++) {
-                xmlText += toString(xml.children[i]);
-            }
-            
+            xml.children.map(child => {
+                xmlText += this._toString(child);
+            });
+
             xmlText += '</' + xml.name + '>';
         }
         
         return xmlText;
     }
     
-    function convertTagToText(tag) {
+    _convertTagToText(tag) {
         var tagText = '<' + tag.name;
         var attributesText = [];
         
@@ -126,15 +129,12 @@ function XMLParser() {
         
         return tagText;
     }
-    
-    return {
-        parseFromString: function (xmlText) {
-            return parseFromString(xmlText);
-        },
-        toString: function (xml) {
-            return toString(xml);
-        }
-    };
-}
 
-module.exports = XMLParser;
+    parseFromString(xmlText) {
+        return this._parseFromString(xmlText);
+    }
+
+    toString(xml) {
+        return this._toString(xml);
+    }
+};
