@@ -43,6 +43,7 @@ console.log(xml.getElementsByTagName('Name'));
 Output:
 
 ```
+// XML parsing response
 {
     name: 'Library', attributes: {}, value: '', chiildren: [
         {
@@ -73,6 +74,15 @@ Output:
         }
     ]
 }
+
+// getElementsByTagName response
+[
+    {
+        name: 'Name', attributes: {}, value: 'Me Before You', children: []
+    }, {
+        name: 'Name', attributes: {}, value: 'Houses of the Holy', children: []
+    }
+]
 ```
 
 # Usage
