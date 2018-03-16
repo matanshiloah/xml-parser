@@ -73,14 +73,6 @@ Output:
         }
     ]
 }
-
-[
-    {
-        name: 'Name', attributes: {}, value: 'Me Before You', children: []
-    }, {
-        name: 'Name', attributes: {}, value: 'Houses of the Holy', children: []
-    }
-]
 ```
 
 # Usage
