@@ -38,7 +38,7 @@ module.exports = class {
     }
     
     _parseTag(tagText, parent) {
-        var cleanTagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-]+)/g);
+        var cleanTagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-\:]+)/g);
         
         var tag = {
             name: cleanTagText.shift(),
