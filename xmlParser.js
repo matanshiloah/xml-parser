@@ -13,7 +13,13 @@ module.exports = class {
             }
             
             if (element.indexOf('<') == 0 && element.indexOf('CDATA') < 0) {
-                rawXmlData.push(this._parseTag(element));
+                var parsedTag = this._parseTag(element);
+
+                rawXmlData.push(parsedTag);
+
+                if (element.match(/\/\s*>$/)) {
+                    rawXmlData.push(this._parseTag('</' + parsedTag.name + '>'));
+                }
             } else {
                 rawXmlData[rawXmlData.length - 1].value = this._parseValue(element);
             }
@@ -39,7 +45,7 @@ module.exports = class {
     
     _parseTag(tagText, parent) {
         var cleanTagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-\:]+)/g);
-        
+
         var tag = {
             name: cleanTagText.shift(),
             attributes: {},
@@ -125,6 +131,10 @@ module.exports = class {
             tagText += '>' + tag.value + '</' + tag.name + '>';
         } else {
             tagText += '>';
+        }
+
+        if (tag.children.length === 0) {
+            tagText += '</' + tag.name + '>';
         }
         
         return tagText;
