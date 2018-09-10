@@ -47,7 +47,7 @@ module.exports = class {
         var cleanTagText = tagText.match(/([^\s]*)=["'](.*?)["']|([\/?\w\-\:]+)/g);
 
         var tag = {
-            name: cleanTagText.shift(),
+            name: cleanTagText.shift().replace(/\/\s*$/, ''),
             attributes: {},
             children: [],
             value: '',
