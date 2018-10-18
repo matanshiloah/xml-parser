@@ -45,7 +45,7 @@ Output:
 ```
 // XML parsing response
 {
-    name: 'Library', attributes: {}, value: '', chiildren: [
+    name: 'Library', attributes: {}, value: '', children: [
         {
             name: 'Books', attributes: { count: '1' }, value: '', children: [
                 {
