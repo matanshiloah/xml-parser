@@ -1,8 +1,13 @@
 module.exports = [
   {
-    test: /\.jsx?$/,
-    exclude: /(node_modules|bower_components|public\/)/,
-    loader: "babel-loader"
+    test: /\.(scss|ico)$/,
+    loaders: ['babel-loader'],
+    exclude: ['node_modules']
+  },
+  {
+    test: /\.js$/,
+    loader: 'babel-loader',
+    exclude: /node_modules/
   },
   {
     test: /\.css$/,
