@@ -60,7 +60,18 @@ module.exports = class {
             if (attributeKeyVal.length < 2) {
                 return;
             }
-            tag.attributes[attributeKeyVal[0]] = 'string' === typeof attributeKeyVal[1] ? (attributeKeyVal[1].replace(/^"/g, '').replace(/^'/g, '').replace(/"$/g, '').replace(/'$/g, '').trim()) : attributeKeyVal[1];
+
+            var attributeKey = attributeKeyVal[0];
+            var attributeVal = '';
+
+            if (attributeKeyVal.length === 2) {
+                attributeVal = attributeKeyVal[1];
+            } else {
+                attributeKeyVal = attributeKeyVal.slice(1);
+                attributeVal = attributeKeyVal.join('=');
+            }
+
+            tag.attributes[attributeKey] = 'string' === typeof attributeVal ? (attributeVal.replace(/^"/g, '').replace(/^'/g, '').replace(/"$/g, '').replace(/'$/g, '').trim()) : attributeVal;
         });
 
         return tag;
