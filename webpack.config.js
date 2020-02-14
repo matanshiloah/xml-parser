@@ -1,13 +1,6 @@
 "use strict";
 var webpack = require('webpack');
 var path = require('path');
-var loaders = require('./webpack.loaders');
-
-loaders.push({
-  test: /\.(scss|ico)$/,
-  loaders: ['style-loader', 'css-loader?importLoaders=1', 'sass-loader'],
-  exclude: ['node_modules']
-});
 
 module.exports = {
     entry: [

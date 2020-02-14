@@ -21,9 +21,8 @@ module.exports = class {
                     rawXmlData.push(this._parseTag('</' + parsedTag.name + '>'));
                 }
             } else {
-                rawXmlData[rawXmlData.length - 1].value = this._parseValue(element);
+                rawXmlData[rawXmlData.length - 1].value += ` ${this._parseValue(element)}`;
             }
-
         });
 
         return this._convertTagsArrayToTree(rawXmlData)[0];
@@ -96,7 +95,7 @@ module.exports = class {
 
         if (tag.value.indexOf('</') > -1 || tag.name.match(/\/$/)) {
             tag.name = tag.name.replace(/\/$/, '').trim();
-            tag.value = tag.value.substring(0, tag.value.indexOf('</'));
+            tag.value = tag.value.substring(0, tag.value.indexOf('</')).trim();
             xmlTree.push(tag);
             xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
 
