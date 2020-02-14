@@ -2,7 +2,8 @@ module.exports = class {
     constructor() {}
 
     _parseFromString(xmlText) {
-        var cleanXmlText = xmlText.replace(/\s{2,}/g, ' ').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n');
+        xmlText = this._encodeCDATAValues(xmlText);
+        var cleanXmlText = xmlText.replace(/\s{2,}/g, ' ').replace(/\\t\\n\\r/g, '').replace(/>/g, '>\n').replace(/\]\]/g, ']]\n');
         var rawXmlData = [];
 
         cleanXmlText.split('\n').map(element => {
@@ -23,9 +24,24 @@ module.exports = class {
             } else {
                 rawXmlData[rawXmlData.length - 1].value += ` ${this._parseValue(element)}`;
             }
+
         });
 
         return this._convertTagsArrayToTree(rawXmlData)[0];
+    }
+
+    _encodeCDATAValues(xmlText) {
+        var cdataRegex = new RegExp(/<!CDATA\[([^\]\]]+)\]\]/gi);
+        var result = cdataRegex.exec(xmlText);
+        while (result) {
+            if (result.length > 1) {
+                xmlText = xmlText.replace(result[1], encodeURIComponent(result[1]));
+            }
+            
+            result = cdataRegex.exec(xmlText);
+        }
+
+        return xmlText;
     }
 
     _getElementsByTagName(tagName) {
@@ -108,6 +124,7 @@ module.exports = class {
 
         xmlTree.push(tag);
         tag.children = this._convertTagsArrayToTree(xml);
+        tag.value = decodeURIComponent(tag.value.trim());
         xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
 
         return xmlTree;
