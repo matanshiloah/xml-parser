@@ -103,11 +103,7 @@ module.exports = class {
     _convertTagsArrayToTree(xml) {
         var xmlTree = [];
 
-        while(true) {
-            if (xml.length == 0) {
-                return xmlTree;
-            }
-
+        while(xml.length > 0) {
             var tag = xml.shift();
 
             if (tag.value.indexOf('</') > -1 || tag.name.match(/\/$/)) {
@@ -118,13 +114,14 @@ module.exports = class {
             }
 
             if (tag.name.indexOf('/') == 0) {
-                return xmlTree;
+                break;
             }
 
             xmlTree.push(tag);
             tag.children = this._convertTagsArrayToTree(xml);
             tag.value = decodeURIComponent(tag.value.trim());
         }
+        return xmlTree;
     }
 
     _toString(xml) {
