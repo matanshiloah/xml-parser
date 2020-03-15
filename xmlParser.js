@@ -103,31 +103,28 @@ module.exports = class {
     _convertTagsArrayToTree(xml) {
         var xmlTree = [];
 
-        if (xml.length == 0) {
-            return xmlTree;
-        }
+        while(true) {
+            if (xml.length == 0) {
+                return xmlTree;
+            }
 
-        var tag = xml.shift();
+            var tag = xml.shift();
 
-        if (tag.value.indexOf('</') > -1 || tag.name.match(/\/$/)) {
-            tag.name = tag.name.replace(/\/$/, '').trim();
-            tag.value = tag.value.substring(0, tag.value.indexOf('</')).trim();
+            if (tag.value.indexOf('</') > -1 || tag.name.match(/\/$/)) {
+                tag.name = tag.name.replace(/\/$/, '').trim();
+                tag.value = tag.value.substring(0, tag.value.indexOf('</')).trim();
+                xmlTree.push(tag);
+                continue;
+            }
+
+            if (tag.name.indexOf('/') == 0) {
+                return xmlTree;
+            }
+
             xmlTree.push(tag);
-            xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
-
-            return xmlTree;
+            tag.children = this._convertTagsArrayToTree(xml);
+            tag.value = decodeURIComponent(tag.value.trim());
         }
-
-        if (tag.name.indexOf('/') == 0) {
-            return xmlTree;
-        }
-
-        xmlTree.push(tag);
-        tag.children = this._convertTagsArrayToTree(xml);
-        tag.value = decodeURIComponent(tag.value.trim());
-        xmlTree = xmlTree.concat(this._convertTagsArrayToTree(xml));
-
-        return xmlTree;
     }
 
     _toString(xml) {
