@@ -148,7 +148,7 @@ module.exports = class {
         }
 
         if (tag.value.length > 0) {
-            tagText += '>' + tag.value + '</' + tag.name + '>';
+            tagText += '>' + tag.value;
         } else {
             tagText += '>';
         }
