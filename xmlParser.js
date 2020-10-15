@@ -31,7 +31,7 @@ module.exports = class {
     }
 
     _encodeCDATAValues(xmlText) {
-        var cdataRegex = new RegExp(/<!CDATA\[([^\]\]]+)\]\]/gi);
+        var cdataRegex = new RegExp(/<!\[CDATA\[([^\]\]]+)\]\]/gi);
         var result = cdataRegex.exec(xmlText);
         while (result) {
             if (result.length > 1) {
